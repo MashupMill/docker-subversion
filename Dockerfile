@@ -11,7 +11,7 @@ ENV COMPATIBLE_VERSION=\
 ADD bootstrap.sh /app/
 WORKDIR /app
 
-RUN apt-get install subversion -y && \
+RUN apt-get install subversion sasl2-bin -y && \
     apt-get autoremove -y && \
     apt-get clean
 
