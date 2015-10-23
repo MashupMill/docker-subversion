@@ -2,17 +2,22 @@ FROM ubuntu:14.04
 MAINTAINER mashupmill
 
 VOLUME ["/app", "/data"]
-EXPOSE 3690
+EXPOSE 80
 ENV COMPATIBLE_VERSION=\
-    ANON_ACCESS=read\
-    AUTH_ACCESS=write\
     USERNAME=admin\
     PASSWORD=admin
-ADD bootstrap.sh /app/
-WORKDIR /app
 
-RUN apt-get install subversion sasl2-bin -y && \
+COPY bootstrap.sh /app/
+
+WORKDIR /app
+RUN apt-get update &&\
+    apt-get install -y apache2 apache2-utils subversion libapache2-svn && \
     apt-get autoremove -y && \
-    apt-get clean
+    apt-get clean && \
+    usermod -U www-data && chsh -s /bin/bash www-data && \
+    a2enmod rewrite cgid headers dav_svn && \
+    a2dissite 000-default
+
+COPY dav_svn.conf /etc/apache2/mods-available/dav_svn.conf
 
 CMD /bin/bash /app/bootstrap.sh
